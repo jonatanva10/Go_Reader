@@ -10,6 +10,7 @@ package swagger
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"path"
 )
@@ -18,9 +19,12 @@ var books = []Book{
 	Book{BookId: "Book1", Title: "Operating System Concepts", Edition: "9th",
 		Copyright: "2012", Language: "ENGLISH", Pages: "976",
 		Author: "Abraham Silberschatz", Publisher: "John Wiley & Sons"},
-	Book{BookId: "Book3", Title: "Computer Networks", Edition: "5th",
+	Book{BookId: "Book2", Title: "Computer Networks", Edition: "5th",
 		Copyright: "2010", Language: "ENGLISH", Pages: "960",
 		Author: "Andrew S. Tanenbaum", Publisher: "Andrew S. Tanenbaum"},
+	Book{BookId: "Book3", Title: "Grafting Tools", Edition: "7th",
+		Copyright: "2015", Language: "ENGLISH", Pages: "400",
+		Author: "Cartago", Publisher: "Allen S. Tanenbaum"},
 }
 
 func find(x string) int {
@@ -33,11 +37,22 @@ func find(x string) int {
 }
 
 func BooksBookIdDelete(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Example BooksBookIdDelete")
+	id := path.Base(r.URL.Path)
+	i := find(id)
+	if i == -1 {
+		log.Printf("Book not exists")
+		return
+	}
+	sliceBooks := append(books[:i], books[i+1:]...)
+	dataJson, _ := json.Marshal(sliceBooks)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Write(dataJson)
 	w.WriteHeader(http.StatusOK)
 }
 
 func BooksBookIdGet(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Example BooksBookIdGet")
 	id := path.Base(r.URL.Path)
 	i := find(id)
 	if i == -1 {
