@@ -10,9 +10,10 @@ package swagger
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type Route struct {
@@ -72,6 +73,13 @@ var routes = Routes{
 		strings.ToUpper("Put"),
 		"/books/{bookId}",
 		BooksBookIdPut,
+	},
+
+	Route{
+		"BooksGet",
+		strings.ToUpper("Get"),
+		"/books/",
+		BooksGet,
 	},
 
 	Route{

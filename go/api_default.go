@@ -19,12 +19,9 @@ var books = []Book{
 	Book{BookId: "Book1", Title: "Operating System Concepts", Edition: "9th",
 		Copyright: "2012", Language: "ENGLISH", Pages: "976",
 		Author: "Abraham Silberschatz", Publisher: "John Wiley & Sons"},
-	Book{BookId: "Book2", Title: "Computer Networks", Edition: "5th",
+	Book{BookId: "Book3", Title: "Computer Networks", Edition: "5th",
 		Copyright: "2010", Language: "ENGLISH", Pages: "960",
 		Author: "Andrew S. Tanenbaum", Publisher: "Andrew S. Tanenbaum"},
-	Book{BookId: "Book3", Title: "Grafting Tools", Edition: "7th",
-		Copyright: "2015", Language: "ENGLISH", Pages: "400",
-		Author: "Cartago", Publisher: "Allen S. Tanenbaum"},
 }
 
 func find(x string) int {
@@ -45,6 +42,7 @@ func BooksBookIdDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sliceBooks := append(books[:i], books[i+1:]...)
+	books = sliceBooks
 	dataJson, _ := json.Marshal(sliceBooks)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.Write(dataJson)
@@ -65,7 +63,32 @@ func BooksBookIdGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func BooksBookIdPut(w http.ResponseWriter, r *http.Request) {
+	id := path.Base(r.URL.Path)
+	i := find(id)
+	if i == -1 {
+		return
+	}
+	for _, bookToUpdate := range books {
+		if id == bookToUpdate.BookId {
+			err := json.NewDecoder(r.Body).Decode(&bookToUpdate)
+			oldBook, err := json.Marshal(bookToUpdate)
+			w.Write(oldBook)
+			w.WriteHeader(http.StatusOK)
+			if err != nil {
+				panic(err)
+			}
+			books[i] = bookToUpdate
+		}
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+}
+
+func BooksGet(w http.ResponseWriter, r *http.Request) {
+	//log.Printf("BooksBookIdGetAll")
+	dataJson, _ := json.Marshal(books)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Write(dataJson)
 	w.WriteHeader(http.StatusOK)
 }
 

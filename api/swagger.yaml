@@ -59,6 +59,19 @@ paths:
         "200":
           description: OK
   /books/:
+    get:
+      summary: Returns all books.
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+                x-content-type: application/json
     post:
       summary: Create a new book
       requestBody:
